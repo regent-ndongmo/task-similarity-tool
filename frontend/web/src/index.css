@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --scrollbar-thumb: #1e1e3a;
+    --scrollbar-track: #09091a;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
+
+  html {
+    @apply bg-obsidian-950 text-obsidian-100;
+  }
+
+  body {
+    @apply font-body antialiased;
+  }
+
+  ::selection {
+    @apply bg-iris-600/40 text-white;
+  }
+}
+
+@layer components {
+  /* ── Glassmorphism card ── */
+  .glass-card {
+    @apply bg-obsidian-900/80 border border-obsidian-700/50 backdrop-blur-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-iris-500/40 hover:shadow-card-hover;
+  }
+
+  /* ── Score bars ── */
+  .score-bar {
+    @apply h-1.5 rounded-full bg-obsidian-800 overflow-hidden;
+  }
+
+  .score-fill {
+    @apply h-full rounded-full transition-all duration-700 ease-out;
+  }
+
+  /* ── Input base ── */
+  .input-base {
+    @apply w-full bg-obsidian-900 border border-obsidian-700 rounded-xl px-4 py-3
+           text-obsidian-100 placeholder-obsidian-500 font-body text-sm
+           focus:outline-none focus:ring-2 focus:ring-iris-500/50 focus:border-iris-500/60
+           transition-all duration-200;
+  }
+
+  /* ── Button primary ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-iris-600 hover:bg-iris-500 text-white
+           px-5 py-2.5 rounded-xl font-display font-semibold text-sm
+           transition-all duration-200 hover:shadow-iris
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-obsidian-800 hover:bg-obsidian-700 text-obsidian-200
+           border border-obsidian-600 hover:border-obsidian-500
+           px-5 py-2.5 rounded-xl font-display font-semibold text-sm
+           transition-all duration-200 active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-800/60
+           px-4 py-2 rounded-xl font-display font-medium text-sm
+           transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2
+           bg-crimson-500/10 hover:bg-crimson-500/20 text-crimson-400
+           border border-crimson-500/20 hover:border-crimson-500/40
+           px-4 py-2 rounded-xl font-display font-semibold text-sm
+           transition-all duration-200;
+  }
+
+  /* ── Badge levels ── */
+  .badge-doublon {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold
+           bg-crimson-500/15 text-crimson-400 border border-crimson-500/20;
+  }
+
+  .badge-forte {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold
+           bg-ember-500/15 text-ember-400 border border-ember-500/20;
+  }
+
+  .badge-moderee {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold
+           bg-gold-500/15 text-gold-400 border border-gold-500/20;
+  }
+
+  .badge-unique {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-bold
+           bg-jade-500/15 text-jade-400 border border-jade-500/20;
+  }
+
+  /* ── Skeleton shimmer ── */
+  .skeleton {
+    @apply bg-obsidian-800 rounded-lg overflow-hidden relative;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-iris-300 to-iris-500 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold-400 to-ember-400 bg-clip-text text-transparent;
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(135deg, #6366f1, #a78bfa) 1;
+  }
+
+  .glow-iris {
+    filter: drop-shadow(0 0 12px rgba(99,102,241,0.4));
+  }
+
+  .noise-overlay::before {
+    content: '';
+    @apply absolute inset-0 opacity-[0.03] pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}

@@ -1,4 +1,10 @@
-﻿# Datasets & Models - STRICT
+﻿# React project
+node_modules/
+build/
+dist/
+*.log
+
+# Datasets & Models - STRICT
 **/data/
 **/models/*.pt
 **/models/*.pth

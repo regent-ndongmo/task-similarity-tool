@@ -1,9 +1,9 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 from datetime import datetime
 
 
-# ─── Auth Schemas ───────────────────────────────────────────────────────────
+# ─── Auth ────────────────────────────────────────────────────────────────────
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
@@ -15,7 +15,6 @@ class UserOut(BaseModel):
     email: str
     is_active: bool
     created_at: datetime
-
     class Config:
         from_attributes = True
 
@@ -29,7 +28,7 @@ class LoginRequest(BaseModel):
     password: str
 
 
-# ─── Task Schemas ────────────────────────────────────────────────────────────
+# ─── Tasks ───────────────────────────────────────────────────────────────────
 class TaskCreate(BaseModel):
     title: str
     description: str
@@ -40,7 +39,6 @@ class TaskOut(BaseModel):
     description: str
     owner_id: int
     created_at: datetime
-
     class Config:
         from_attributes = True
 
@@ -49,14 +47,24 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
 
 
-# ─── Similarity Schemas ──────────────────────────────────────────────────────
+# ─── File Preview ─────────────────────────────────────────────────────────────
+class FilePreviewResponse(BaseModel):
+    filename: str
+    total_rows: int
+    columns: List[str]
+    auto_detected: Dict[str, Optional[str]]
+    sample_rows: List[Dict[str, Any]]
+    needs_manual_mapping: bool
+
+
+# ─── Similarity ───────────────────────────────────────────────────────────────
 class SimilarityMatch(BaseModel):
     task_id: int
     title: str
     description: str
     similarity_score: float
     common_keywords: List[str]
-    level: str  # "doublon", "forte", "modérée"
+    level: str
 
 class SimilarityResult(BaseModel):
     submitted_title: str
@@ -73,4 +81,55 @@ class BulkSimilarityItem(BaseModel):
 class BulkSimilarityResult(BaseModel):
     total_submitted: int
     total_analyzed: int
+    column_mapping: Optional[Dict[str, Any]] = None
     results: List[BulkSimilarityItem]
+    stats_summary: Optional[Dict[str, Any]] = None
+
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+class AnalysisLogOut(BaseModel):
+    id: int
+    analysis_type: str
+    source_filename: Optional[str]
+    total_submitted: int
+    total_analyzed: int
+    duplicates_found: int
+    strong_matches: int
+    moderate_matches: int
+    clean_tasks: int
+    column_mapping: Optional[Dict[str, Any]]
+    status: str
+    error_message: Optional[str]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+class LogsResponse(BaseModel):
+    logs: List[AnalysisLogOut]
+    total: int
+    offset: int
+    limit: int
+
+
+# ─── Statistics ───────────────────────────────────────────────────────────────
+class GlobalStats(BaseModel):
+    total_analyses: int
+    total_tasks_submitted: int
+    total_duplicates_found: int
+    total_strong_matches: int
+    total_moderate_matches: int
+    total_clean: int
+    duplicate_rate: float
+    single_analyses: int
+    bulk_analyses: int
+    last_analysis_at: Optional[str]
+
+class TrendPoint(BaseModel):
+    date: str
+    analyses: int
+    tasks: int
+    duplicates: int
+
+class StatsResponse(BaseModel):
+    global_stats: GlobalStats
+    trend: List[TrendPoint]

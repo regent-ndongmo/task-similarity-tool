@@ -15,3 +15,4 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     tasks = relationship("Task", back_populates="owner", cascade="all, delete-orphan")
+    logs = relationship("AnalysisLog", back_populates="owner", cascade="all, delete-orphan")
