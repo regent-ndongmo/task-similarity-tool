@@ -1,0 +1,9 @@
+title,description
+Audit infrastructure réseau,"Analyse complète de l'infrastructure réseau de l'entreprise incluant les équipements actifs, la topologie, les VLAN et la sécurité périmétrique."
+Migration base de données Oracle vers PostgreSQL,"Étude de faisabilité et plan de migration de la base de données Oracle 12c vers PostgreSQL 15, incluant la conversion des procédures stockées et la migration des données."
+Déploiement Kubernetes en production,"Mise en place d'un cluster Kubernetes pour orchestrer les microservices en environnement de production avec haute disponibilité."
+Refonte de l'interface utilisateur du portail RH,"Redesign complet de l'interface utilisateur du portail ressources humaines pour améliorer l'expérience utilisateur et la navigation."
+Analyse de la sécurité réseau,"Audit de sécurité de l'infrastructure réseau incluant les firewalls, les accès VPN, et la configuration des switches et routeurs."
+Étude de migration cloud AWS,"Évaluation des coûts et plan de migration de l'infrastructure on-premise vers Amazon Web Services, analyse des services compatibles."
+Optimisation des performances de la base de données,"Analyse et optimisation des requêtes SQL, création d'index, et tuning des paramètres de la base de données pour améliorer les temps de réponse."
+Développement d'une API REST pour l'application mobile,"Conception et développement d'une API RESTful pour exposer les données métier à l'application mobile iOS et Android."

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Similarity Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: #2a2a3a;
+    --accent: #6366f1;
+    --accent2: #a78bfa;
+    --green: #22c55e;
+    --orange: #f97316;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ── Header ── */
+  header {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon { font-size: 1.4rem; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .badge {
+    font-size: 0.7rem;
+    font-family: 'Space Mono', monospace;
+    background: rgba(99,102,241,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(99,102,241,0.3);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Auth Gate ── */
+  #auth-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 70px);
+    padding: 40px 0;
+  }
+
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 16px 16px 0 0;
+  }
+  .auth-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .auth-sub { color: var(--muted); font-size: 0.875rem; margin-bottom: 32px; }
+
+  .tab-row {
+    display: flex;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 28px;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--accent); color: #fff; }
+
+  label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 18px;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 90px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+
+  /* ── Main App ── */
+  #app-screen { display: none; }
+
+  .app-header {
+    padding: 24px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 16px 6px 8px;
+    font-size: 0.85rem;
+  }
+  .avatar {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #fff;
+  }
+
+  /* ── Tabs ── */
+  .main-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .main-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .main-tab.active { color: var(--accent2); border-bottom-color: var(--accent); background: rgba(99,102,241,0.06); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent2);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── Task List ── */
+  .task-grid { display: grid; gap: 12px; }
+  .task-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    transition: border-color 0.2s;
+  }
+  .task-item:hover { border-color: rgba(99,102,241,0.4); }
+  .task-meta { font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .task-desc { font-size: 0.85rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  /* ── Similarity Results ── */
+  .result-header {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 24px;
+  }
+  .stat { text-align: center; }
+  .stat-val { font-family: 'Space Mono', monospace; font-size: 1.5rem; color: var(--accent2); }
+  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  .match-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .match-card.doublon::before { background: var(--red); }
+  .match-card.forte::before { background: var(--orange); }
+  .match-card.modérée::before { background: var(--yellow); }
+
+  .match-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .score-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+  }
+  .doublon .score-badge { color: var(--red); background: rgba(239,68,68,0.12); }
+  .forte .score-badge { color: var(--orange); background: rgba(249,115,22,0.12); }
+  .modérée .score-badge { color: var(--yellow); background: rgba(234,179,8,0.12); }
+
+  .level-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .doublon .level-pill { background: rgba(239,68,68,0.15); color: var(--red); }
+  .forte .level-pill { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .modérée .level-pill { background: rgba(234,179,8,0.15); color: var(--yellow); }
+
+  .keywords { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .kw {
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    background: rgba(99,102,241,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(99,102,241,0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── Upload Zone ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(99,102,241,0.04); }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .upload-text { color: var(--muted); font-size: 0.9rem; }
+  .upload-text strong { color: var(--text); }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* ── Alert ── */
+  .alert {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .alert-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+  .alert-ok  { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+
+  /* ── Spinner ── */
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+
+  /* Grid layout for panels */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+  .section-label:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      Task Similarity Analyzer
+    </div>
+    <div class="nav-right">
+      <span class="badge">ML v1.0</span>
+    </div>
+  </header>
+
+  <!-- ──────────────── AUTH SCREEN ──────────────── -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-title">⬡ Accès sécurisé</div>
+      <div class="auth-sub">Connectez-vous pour analyser vos tâches</div>
+
+      <div class="tab-row">
+        <div class="tab active" onclick="switchAuthTab('login')">Connexion</div>
+        <div class="tab" onclick="switchAuthTab('register')">Inscription</div>
+      </div>
+
+      <div id="auth-error" class="alert alert-err hidden"></div>
+      <div id="auth-success" class="alert alert-ok hidden"></div>
+
+      <!-- Login form -->
+      <div id="login-form">
+        <label>Nom d'utilisateur</label>
+        <input type="text" id="login-username" placeholder="votre_nom" autocomplete="username">
+        <label>Mot de passe</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+        <button class="btn btn-primary" onclick="doLogin()">
+          <span id="login-spinner" class="spinner hidden"></span>
+          Se connecter →
+        </button>
+      </div>
+
+      <!-- Register form -->
+      <div id="register-form" class="hidden">
+        <label>Nom d'utilisateur</label>
+        <input type="text" id="reg-username" placeholder="votre_nom">
+        <label>Adresse email</label>
+        <input type="email" id="reg-email" placeholder="vous@email.com">
+        <label>Mot de passe</label>
+        <input type="password" id="reg-password" placeholder="••••••• (min. 6 car.)">
+        <button class="btn btn-primary" onclick="doRegister()">
+          <span id="register-spinner" class="spinner hidden"></span>
+          Créer mon compte →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── MAIN APP ──────────────── -->
+  <div id="app-screen">
+    <div class="app-header">
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:1rem;color:var(--accent2)">Tableau de bord</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:2px">Détection intelligente de doublons</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="user-pill">
+          <div class="avatar" id="avatar-initials">?</div>
+          <span id="username-display">...</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="doLogout()">Déconnexion</button>
+      </div>
+    </div>
+
+    <div class="main-tabs">
+      <div class="main-tab active" onclick="switchPanel('analyze')">🔍 Analyser</div>
+      <div class="main-tab" onclick="switchPanel('import')">📁 Import fichier</div>
+      <div class="main-tab" onclick="switchPanel('tasks')">📋 Mes tâches</div>
+    </div>
+
+    <!-- ── Panel: Analyser ── -->
+    <div id="panel-analyze" class="panel active">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">🔍 Tâche à analyser</div>
+          <div id="analyze-error" class="alert alert-err hidden"></div>
+          <label>Titre *</label>
+          <input type="text" id="a-title" placeholder="Ex: Étude de faisabilité réseau">
+          <label>Description *</label>
+          <textarea id="a-desc" rows="5" placeholder="Décrivez la tâche en détail..."></textarea>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" style="flex:1" onclick="doAnalyze()">
+              <span id="analyze-spinner" class="spinner hidden"></span>
+              Analyser les similarités
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="saveAndAnalyze()" title="Enregistrer puis analyser">
+              + Sauvegarder
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div id="results-area">
+            <div class="empty">
+              <div class="empty-icon">⬡</div>
+              <div>Soumettez une tâche pour voir<br>les similarités détectées</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel: Import Fichier ── -->
+    <div id="panel-import" class="panel">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📁 Import & analyse en masse</div>
+          <div id="import-error" class="alert alert-err hidden"></div>
+          <div id="import-success" class="alert alert-ok hidden"></div>
+
+          <div class="upload-zone" onclick="document.getElementById('file-input').click()" id="upload-zone">
+            <div class="upload-icon">📂</div>
+            <div class="upload-text">
+              <strong>Cliquez pour sélectionner un fichier</strong><br>
+              CSV ou Excel (.xlsx, .xls)<br>
+              <small style="color:var(--muted)">Colonnes requises : <code>title</code> (ou <code>titre</code>) et <code>description</code></small>
+            </div>
+          </div>
+          <input type="file" id="file-input" class="hidden" accept=".csv,.xlsx,.xls">
+          <div id="file-name" style="font-size:0.8rem;color:var(--muted);margin-bottom:16px"></div>
+
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" style="flex:1" onclick="doImportAnalyze()">
+              <span id="import-analyze-spinner" class="spinner hidden"></span>
+              Analyser les similarités
+            </button>
+            <button class="btn btn-secondary" onclick="doImportOnly()">
+              <span id="import-only-spinner" class="spinner hidden"></span>
+              Importer seulement
+            </button>
+          </div>
+
+          <div style="margin-top:20px;padding:16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+            <div style="font-size:0.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Format CSV exemple</div>
+            <pre style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);white-space:pre-wrap">title,description
+Audit réseau,"Analyse complète de l'infrastructure réseau..."
+Migration cloud,"Étude de migration vers AWS..."</pre>
+          </div>
+        </div>
+
+        <div id="bulk-results">
+          <div class="empty">
+            <div class="empty-icon">📊</div>
+            <div>Importez un fichier pour analyser<br>les similarités en masse</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel: Mes Tâches ── -->
+    <div id="panel-tasks" class="panel">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div class="card-title" style="margin-bottom:0">📋 Mes tâches enregistrées</div>
+          <button class="btn btn-secondary btn-sm" onclick="loadTasks()">↻ Actualiser</button>
+        </div>
+        <div id="tasks-list">
+          <div class="empty"><div class="spinner" style="border-color:rgba(99,102,241,0.3);border-top-color:var(--accent);width:24px;height:24px;margin:0 auto"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-screen -->
+</div><!-- /container -->
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+let token = localStorage.getItem('tsa_token');
+let currentUser = JSON.parse(localStorage.getItem('tsa_user') || 'null');
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+window.onload = () => {
+  if (token && currentUser) showApp();
+};
+
+// ── Auth helpers ──────────────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (tab === 'login') ? i === 0 : i === 1));
+  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('auth-error').classList.add('hidden');
+  document.getElementById('auth-success').classList.add('hidden');
+}
+
+function showAuthMsg(msg, isErr) {
+  const el = document.getElementById(isErr ? 'auth-error' : 'auth-success');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  if (!isErr) setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+async function doLogin() {
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value;
+  if (!u || !p) return showAuthMsg('Veuillez remplir tous les champs.', true);
+  const sp = document.getElementById('login-spinner');
+  sp.classList.remove('hidden');
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username: u, password: p})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erreur de connexion');
+    token = data.access_token;
+    currentUser = data.user;
+    localStorage.setItem('tsa_token', token);
+    localStorage.setItem('tsa_user', JSON.stringify(currentUser));
+    showApp();
+  } catch(e) { showAuthMsg(e.message, true); }
+  finally { sp.classList.add('hidden'); }
+}
+
+async function doRegister() {
+  const u = document.getElementById('reg-username').value.trim();
+  const e = document.getElementById('reg-email').value.trim();
+  const p = document.getElementById('reg-password').value;
+  if (!u || !e || !p) return showAuthMsg('Veuillez remplir tous les champs.', true);
+  const sp = document.getElementById('register-spinner');
+  sp.classList.remove('hidden');
+  try {
+    const res = await fetch(`${API}/auth/register`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username: u, email: e, password: p})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erreur inscription');
+    showAuthMsg('Compte créé ! Connectez-vous maintenant.', false);
+    switchAuthTab('login');
+    document.getElementById('login-username').value = u;
+  } catch(e) { showAuthMsg(e.message, true); }
+  finally { sp.classList.add('hidden'); }
+}
+
+function doLogout() {
+  token = null; currentUser = null;
+  localStorage.removeItem('tsa_token');
+  localStorage.removeItem('tsa_user');
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('username-display').textContent = currentUser.username;
+  document.getElementById('avatar-initials').textContent = currentUser.username[0].toUpperCase();
+  loadTasks();
+}
+
+// ── Panel switching ───────────────────────────────────────────────────────
+function switchPanel(name) {
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+  if (name === 'tasks') loadTasks();
+}
+
+// ── API helper ────────────────────────────────────────────────────────────
+async function apiFetch(url, opts = {}) {
+  const headers = {'Authorization': `Bearer ${token}`, ...(opts.headers || {})};
+  if (!(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+  const res = await fetch(API + url, {...opts, headers});
+  if (res.status === 401) { doLogout(); throw new Error('Session expirée'); }
+  return res;
+}
+
+// ── Analyze ───────────────────────────────────────────────────────────────
+async function doAnalyze() {
+  const title = document.getElementById('a-title').value.trim();
+  const desc = document.getElementById('a-desc').value.trim();
+  if (!title || !desc) return showAlert('analyze-error', 'Titre et description sont obligatoires.');
+  document.getElementById('analyze-error').classList.add('hidden');
+  const sp = document.getElementById('analyze-spinner'); sp.classList.remove('hidden');
+  try {
+    const res = await apiFetch('/similarity/analyze', {method:'POST', body: JSON.stringify({title, description: desc})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    renderResults(data);
+  } catch(e) { showAlert('analyze-error', e.message); }
+  finally { sp.classList.add('hidden'); }
+}
+
+async function saveAndAnalyze() {
+  const title = document.getElementById('a-title').value.trim();
+  const desc = document.getElementById('a-desc').value.trim();
+  if (!title || !desc) return showAlert('analyze-error', 'Titre et description sont obligatoires.');
+  try {
+    await apiFetch('/tasks/', {method:'POST', body: JSON.stringify({title, description: desc})});
+    doAnalyze();
+  } catch(e) { showAlert('analyze-error', e.message); }
+}
+
+function renderResults(data) {
+  const area = document.getElementById('results-area');
+  if (!data.matches.length) {
+    area.innerHTML = `<div class="card" style="text-align:center;padding:40px">
+      <div style="font-size:2rem;margin-bottom:12px">✅</div>
+      <div style="font-weight:600;color:var(--green)">Aucune similarité détectée</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-top:6px">${data.total_analyzed} tâche(s) analysée(s)</div>
+    </div>`;
+    return;
+  }
+
+  let html = `<div class="result-header">
+    <div class="stat"><div class="stat-val">${data.total_analyzed}</div><div class="stat-lbl">Tâches analysées</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--orange)">${data.matches.length}</div><div class="stat-lbl">Correspondances</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--red)">${data.duplicates_found}</div><div class="stat-lbl">Doublons</div></div>
+  </div>`;
+
+  for (const m of data.matches) {
+    const pct = Math.round(m.similarity_score * 100);
+    const bar = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+    html += `<div class="match-card ${m.level}">
+      <div class="match-header">
+        <div>
+          <span class="level-pill">${m.level === 'doublon' ? '🔴' : m.level === 'forte' ? '🟠' : '🟡'} ${m.level}</span>
+          <div style="font-weight:600;margin-top:6px">${escHtml(m.title)}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="score-badge">${pct}%</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:2px">similarité</div>
+        </div>
+      </div>
+      ${bar}
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:10px;line-height:1.5">${escHtml(m.description.substring(0,120))}...</div>
+      ${m.common_keywords.length ? `<div class="keywords">${m.common_keywords.map(k=>`<span class="kw">${k}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }
+  area.innerHTML = html;
+}
+
+// ── Import ────────────────────────────────────────────────────────────────
+document.getElementById('file-input').addEventListener('change', e => {
+  const f = e.target.files[0];
+  document.getElementById('file-name').textContent = f ? `📄 ${f.name}` : '';
+});
+
+async function doImportAnalyze() {
+  const f = document.getElementById('file-input').files[0];
+  if (!f) return showAlert('import-error', 'Veuillez sélectionner un fichier.');
+  document.getElementById('import-error').classList.add('hidden');
+  const sp = document.getElementById('import-analyze-spinner'); sp.classList.remove('hidden');
+  try {
+    const fd = new FormData(); fd.append('file', f);
+    const res = await apiFetch('/similarity/analyze/bulk', {method:'POST', body: fd, headers:{}});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    renderBulkResults(data);
+  } catch(e) { showAlert('import-error', e.message); }
+  finally { sp.classList.add('hidden'); }
+}
+
+async function doImportOnly() {
+  const f = document.getElementById('file-input').files[0];
+  if (!f) return showAlert('import-error', 'Veuillez sélectionner un fichier.');
+  document.getElementById('import-error').classList.add('hidden');
+  const sp = document.getElementById('import-only-spinner'); sp.classList.remove('hidden');
+  try {
+    const fd = new FormData(); fd.append('file', f);
+    const res = await apiFetch('/tasks/import/file', {method:'POST', body: fd, headers:{}});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+    document.getElementById('import-success').textContent = `✅ ${data.message}`;
+    document.getElementById('import-success').classList.remove('hidden');
+    loadTasks();
+  } catch(e) { showAlert('import-error', e.message); }
+  finally { sp.classList.add('hidden'); }
+}
+
+function renderBulkResults(data) {
+  const area = document.getElementById('bulk-results');
+  let html = `<div style="margin-bottom:12px;font-size:0.8rem;color:var(--muted)">
+    <strong style="color:var(--text)">${data.total_submitted}</strong> tâches soumises · 
+    <strong style="color:var(--text)">${data.total_analyzed}</strong> en base
+  </div>`;
+  for (const item of data.results) {
+    const hasDups = item.matches.length > 0;
+    html += `<div class="match-card ${hasDups ? item.matches[0].level : ''}" style="margin-bottom:10px">
+      <div style="font-weight:600;margin-bottom:6px">${escHtml(item.title)}</div>
+      <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px">${escHtml(item.description.substring(0,80))}...</div>
+      ${hasDups
+        ? item.matches.map(m => `<div style="display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;padding:6px 0;border-top:1px solid var(--border)">
+            <span style="color:var(--muted)">${escHtml(m.title)}</span>
+            <span class="score-badge" style="font-size:0.8rem">${Math.round(m.similarity_score*100)}%</span>
+          </div>`).join('')
+        : `<div style="font-size:0.8rem;color:var(--green)">✅ Aucun doublon détecté</div>`
+      }
+    </div>`;
+  }
+  area.innerHTML = html;
+}
+
+// ── Tasks ─────────────────────────────────────────────────────────────────
+async function loadTasks() {
+  const list = document.getElementById('tasks-list');
+  try {
+    const res = await apiFetch('/tasks/');
+    const tasks = await res.json();
+    if (!tasks.length) {
+      list.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div>Aucune tâche enregistrée.<br><a href="#" onclick="switchPanelDirect('analyze')" style="color:var(--accent2)">Analysez et sauvegardez votre première tâche →</a></div></div>`;
+      return;
+    }
+    list.innerHTML = `<div class="task-grid">${tasks.map(t => `
+      <div class="task-item">
+        <div style="flex:1">
+          <div style="font-weight:600">${escHtml(t.title)}</div>
+          <div class="task-desc">${escHtml(t.description.substring(0,120))}${t.description.length > 120 ? '...' : ''}</div>
+          <div class="task-meta">#${t.id} · ${new Date(t.created_at).toLocaleDateString('fr-FR')}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">✕</button>
+      </div>`).join('')}
+    </div>`;
+  } catch(e) { list.innerHTML = `<div class="alert alert-err">${e.message}</div>`; }
+}
+
+async function deleteTask(id) {
+  if (!confirm('Supprimer cette tâche ?')) return;
+  try {
+    await apiFetch(`/tasks/${id}`, {method:'DELETE'});
+    loadTasks();
+  } catch(e) { alert(e.message); }
+}
+
+function switchPanelDirect(name) {
+  document.querySelectorAll('.main-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+// ── Utils ─────────────────────────────────────────────────────────────────
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
