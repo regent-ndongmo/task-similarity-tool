@@ -1,0 +1,1023 @@
+%% ============================================================
+%%  DOCUMENT DE PRÉSENTATION DE PROJET
+%%  Task Similarity Analyzer — AIMS Cameroun
+%%  Candidature académique
+%% ============================================================
+
+\documentclass[12pt, a4paper]{article}
+
+%% ── Encodage & langue ────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+%% ── Mise en page ─────────────────────────────────────────────
+\usepackage[
+  top=2.5cm, bottom=2.5cm,
+  left=2.8cm, right=2.8cm,
+  headheight=15pt
+]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{7pt}
+
+%% ── Polices ──────────────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{microtype}
+
+%% ── Couleurs ─────────────────────────────────────────────────
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{AIMSblue}{RGB}{0, 70, 127}
+\definecolor{AIMSgold}{RGB}{200, 155, 40}
+\definecolor{lightblue}{RGB}{235, 244, 255}
+\definecolor{lightgold}{RGB}{255, 250, 230}
+\definecolor{codered}{RGB}{180, 30, 30}
+\definecolor{codegreen}{RGB}{30, 120, 60}
+\definecolor{codegray}{RGB}{100, 100, 100}
+\definecolor{codebg}{RGB}{248, 248, 252}
+\definecolor{tablegray}{RGB}{245, 247, 250}
+\definecolor{tablehead}{RGB}{0, 70, 127}
+
+%% ── Mathématiques ────────────────────────────────────────────
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{bm}
+
+%% Environnements de théorèmes
+\newtheorem{definition}{Définition}[section]
+\newtheorem{theorem}{Théorème}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{remark}{Remarque}[section]
+\newtheorem{example}{Exemple}[section]
+
+%% ── Graphiques & Figures ─────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%% ── Code source ──────────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{pythonstyle}{
+  language=Python,
+  basicstyle=\small\ttfamily\color{black},
+  keywordstyle=\color{AIMSblue}\bfseries,
+  commentstyle=\color{codegreen}\itshape,
+  stringstyle=\color{codered},
+  numberstyle=\tiny\color{codegray},
+  numbers=left,
+  numbersep=8pt,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{AIMSblue!30},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2,
+  captionpos=b,
+  xleftmargin=12pt,
+  xrightmargin=4pt,
+}
+\lstset{style=pythonstyle}
+
+%% ── Tableaux ─────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{colortbl}
+
+%% ── Liens & PDF ──────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=AIMSblue,
+  urlcolor=AIMSblue,
+  citecolor=AIMSblue,
+  pdftitle={Outil d'analyse de similarité de tâches par Machine Learning},
+  pdfauthor={LOMOFOUET NDONGMO Handrey Jauress},
+  pdfsubject={Projet de génie logiciel et apprentissage automatique}
+]{hyperref}
+
+%% ── En-têtes & pieds de page ─────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{AIMSblue}\textit{Task Similarity Analyzer}}
+\fancyhead[R]{\small\color{AIMSblue}\textit{LOMOFOUET NDONGMO Handrey Jauress}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.2pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{AIMSblue}\leaders\hrule height \headrulewidth\hfill}}
+
+%% ── Listes et boîtes ─────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=3pt, topsep=4pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=3pt, topsep=4pt}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins, theorems}
+
+%% Boîte de formule mathématique
+\newtcolorbox{mathbox}[1][]{
+  enhanced, breakable,
+  colback=lightblue,
+  colframe=AIMSblue,
+  arc=6pt,
+  boxrule=0.7pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={#1},
+  fonttitle=\small\bfseries\color{white},
+  coltitle=white,
+  attach boxed title to top left={yshift=-2mm, xshift=6mm},
+  boxed title style={colback=AIMSblue, arc=4pt, boxrule=0pt},
+  #1
+}
+
+%% Boîte d'information
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  colback=lightgold,
+  colframe=AIMSgold,
+  arc=5pt,
+  boxrule=0.5pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt,
+  #1
+}
+
+%% ── Autres ───────────────────────────────────────────────────
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small, labelfont={bf,color=AIMSblue}, labelsep=period}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{dsfont}
+
+%% ============================================================
+%%  DÉBUT DU DOCUMENT
+%% ============================================================
+\begin{document}
+
+%% ── PAGE DE TITRE ────────────────────────────────────────────
+\begin{titlepage}
+  \begin{center}
+
+    %% Bande supérieure
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[AIMSblue] (current page.north west)
+        rectangle ([yshift=-3.5cm] current page.north east);
+      \fill[AIMSgold] ([yshift=-3.5cm] current page.north west)
+        rectangle ([yshift=-3.9cm] current page.north east);
+    \end{tikzpicture}
+
+    \vspace*{2cm}
+
+    % {\color{white}\Large\bfseries\sffamily
+    %   African Institute for Mathematical Sciences}\\[0.3cm]
+    % {\color{white}\large\sffamily AIMS Cameroun}
+
+    \vspace{1.5cm}
+
+    \begin{tcolorbox}[
+      enhanced, arc=8pt,
+      colback=white, colframe=AIMSblue,
+      boxrule=1.5pt,
+      left=12pt, right=12pt, top=10pt, bottom=10pt,
+      drop shadow={AIMSblue!30}
+    ]
+    \begin{center}
+      {\color{AIMSblue}\LARGE\bfseries\sffamily
+        Outil d'Analyse de Similarité\\[0.3cm]
+        de Tâches par Machine Learning}
+
+      \vspace{0.5cm}
+      \color{codegray}\rule{0.6\textwidth}{0.5pt}
+      \vspace{0.4cm}
+
+      {\large\itshape
+        Modélisation mathématique, apprentissage automatique\\
+        et génie logiciel appliqués à la\\
+        détection intelligente de doublons}
+    \end{center}
+    \end{tcolorbox}
+
+    \vspace{1.5cm}
+
+    \begin{tabular}{rl}
+      \toprule
+      \textbf{Projet} & Task Similarity Analyzer \\
+      \textbf{Domaines} & Machine Learning, NLP, Génie Logiciel \\
+      \textbf{Technologies} & Python, FastAPI, React, MySQL \\
+      \textbf{Document} & Présentation technique et scientifique \\
+      \textbf{URL Github} & \url{https://github.com/regent-ndongmo/task-similarity-tool}} \\
+      \bottomrule
+    \end{tabular}
+
+    \vfill
+
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[AIMSblue] (current page.south west)
+        rectangle ([yshift=1.2cm] current page.south east);
+    \end{tikzpicture}
+
+    % {\color{AIMSgold}\small\bfseries\sffamily
+    %   Candidature AIMS Cameroun --- \the\year}
+
+  \end{center}
+\end{titlepage}
+
+%% ── TABLE DES MATIÈRES ───────────────────────────────────────
+\newpage
+\thispagestyle{plain}
+{
+  \hypersetup{linkcolor=AIMSblue}
+  \tableofcontents
+}
+\newpage
+
+%% ============================================================
+\section{Introduction et Problématique}
+%% ============================================================
+
+\subsection{Contexte}
+
+Dans les environnements d'ingénierie, de recherche et de gestion de projets complexes, la capitalisation des connaissances représente un défi fondamental. Les équipes produisent continuellement des études, des tâches, des rapports et des spécifications techniques. Or, une fraction significative de cette production constitue une \textbf{redondance involontaire} : des travaux similaires ou identiques recréés faute d'un mécanisme de détection efficace.
+
+Ce phénomène engendre des coûts considérables~:
+
+\begin{itemize}
+  \item Gaspillage de ressources humaines et financières ;
+  \item Incohérences entre des études parallèles non coordonnées ;
+  \item Fragmentation de la base de connaissances de l'organisation ;
+  \item Perte de traçabilité et de mémoire institutionnelle.
+\end{itemize}
+
+\subsection{Problème formel}
+
+\begin{definition}[Détection de doublons textuels]
+Étant donné un corpus de documents $\mathcal{C} = \{d_1, d_2, \ldots, d_n\}$ et un nouveau document requête $q$, le problème de détection de doublons consiste à identifier l'ensemble~:
+\[
+\mathcal{D}(q, \tau) = \bigl\{ d_i \in \mathcal{C} \;\big|\; \mathrm{sim}(q, d_i) \geq \tau \bigr\}
+\]
+où $\mathrm{sim} : \mathcal{T} \times \mathcal{T} \to [0,1]$ est une fonction de similarité sur l'espace des textes $\mathcal{T}$, et $\tau \in (0,1]$ est un seuil de détection.
+\end{definition}
+
+\subsection{Solution proposée}
+
+Le projet \textbf{Task Similarity Analyzer} est un système complet qui résout ce problème en combinant~:
+
+\begin{enumerate}
+  \item Une \textbf{modélisation vectorielle} des textes par TF-IDF dans un espace de haute dimension ;
+  \item Une \textbf{mesure de similarité} par cosinus dans cet espace vectoriel ;
+  \item Une \textbf{architecture logicielle} en couches séparant métier, données et interface ;
+  \item Une \textbf{interface utilisateur} React permettant l'analyse unitaire ou en masse.
+\end{enumerate}
+
+%% ============================================================
+\section{Fondements Mathématiques}
+%% ============================================================
+
+\subsection{Représentation vectorielle des textes}
+
+\subsubsection{Le modèle de sac de mots (\textit{Bag of Words})}
+
+Soit $\mathcal{V} = \{w_1, w_2, \ldots, w_{|\mathcal{V}|}\}$ le vocabulaire de l'ensemble des documents. Chaque document $d$ est représenté par un vecteur dans $\mathbb{R}^{|\mathcal{V}|}$~:
+
+\begin{mathbox}[title=Représentation Bag of Words]
+\[
+\mathbf{v}(d) = \bigl( f(w_1, d),\; f(w_2, d),\; \ldots,\; f(w_{|\mathcal{V}|}, d) \bigr) \in \mathbb{R}^{|\mathcal{V}|}
+\]
+où $f(w, d)$ est la fréquence du terme $w$ dans le document $d$.
+\end{mathbox}
+
+Cette représentation souffre d'un défaut majeur~: tous les termes ont le même poids, y compris les mots très courants (articles, prépositions) qui n'apportent pas d'information discriminante.
+
+\subsubsection{La pondération TF-IDF}
+
+La pondération \textbf{TF-IDF} (\textit{Term Frequency -- Inverse Document Frequency}) corrige ce biais en attribuant un poids plus élevé aux termes \textit{rares mais discriminants}.
+
+\begin{definition}[Fréquence du terme --- TF]
+Pour un terme $w$ dans un document $d$, la fréquence du terme est~:
+\[
+\mathrm{TF}(w, d) = \frac{f(w, d)}{\sum_{w' \in d} f(w', d)}
+\]
+Il s'agit de la fréquence relative de $w$ dans $d$.
+\end{definition}
+
+\begin{definition}[Fréquence inverse du document --- IDF]
+Soit $N = |\mathcal{C}|$ le nombre total de documents et $\mathrm{df}(w) = |\{d \in \mathcal{C} : w \in d\}|$ le nombre de documents contenant $w$. La fréquence inverse du document est~:
+\[
+\mathrm{IDF}(w, \mathcal{C}) = \log\!\left(\frac{N + 1}{\mathrm{df}(w) + 1}\right) + 1
+\]
+La constante $+1$ au numérateur et dénominateur assure la robustesse pour les termes rares ou absents du corpus d'entraînement.
+\end{definition}
+
+\begin{definition}[Score TF-IDF]
+Le score TF-IDF d'un terme $w$ dans un document $d$ au sein du corpus $\mathcal{C}$ est~:
+\[
+\boxed{
+  \mathrm{TF\text{-}IDF}(w, d, \mathcal{C}) = \mathrm{TF}(w, d) \times \mathrm{IDF}(w, \mathcal{C})
+}
+\]
+\end{definition}
+
+\begin{remark}
+Dans notre implémentation, nous utilisons le \textbf{TF sous-linéaire} (\textit{sublinear TF scaling}) pour atténuer l'effet des termes très fréquents au sein d'un même document~:
+\[
+\mathrm{TF}_{\mathrm{sub}}(w, d) = 1 + \log\!\bigl(f(w, d)\bigr) \quad \text{si } f(w,d) > 0, \quad 0 \text{ sinon.}
+\]
+\end{remark}
+
+\subsubsection{Le vectoriseur TF-IDF}
+
+Chaque document $d_i$ est transformé en un vecteur de pondérations TF-IDF~:
+
+\[
+\mathbf{x}_i = \bigl(\mathrm{TF\text{-}IDF}(w_1, d_i),\; \mathrm{TF\text{-}IDF}(w_2, d_i),\; \ldots,\; \mathrm{TF\text{-}IDF}(w_{|\mathcal{V}|}, d_i)\bigr) \in \mathbb{R}^{|\mathcal{V}|}
+\]
+
+L'ensemble du corpus forme ainsi une \textbf{matrice document-terme}~:
+\[
+X = \begin{pmatrix} \mathbf{x}_1 \\ \mathbf{x}_2 \\ \vdots \\ \mathbf{x}_n \end{pmatrix} \in \mathbb{R}^{n \times |\mathcal{V}|}
+\]
+
+\subsection{Mesure de similarité par cosinus}
+
+\begin{definition}[Similarité cosinus]
+Soient $\mathbf{u}, \mathbf{v} \in \mathbb{R}^p \setminus \{\mathbf{0}\}$ deux vecteurs non nuls. La \emph{similarité cosinus} est définie par~:
+\[
+\boxed{
+  \mathrm{sim}_{\cos}(\mathbf{u}, \mathbf{v})
+  = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\|_2 \; \|\mathbf{v}\|_2}
+  = \frac{\displaystyle\sum_{k=1}^{p} u_k v_k}
+         {\displaystyle\sqrt{\sum_{k=1}^{p} u_k^2}\;\sqrt{\sum_{k=1}^{p} v_k^2}}
+  = \cos(\theta_{\mathbf{u},\mathbf{v}})
+}
+\]
+où $\theta_{\mathbf{u},\mathbf{v}} \in [0, \pi]$ est l'angle entre les deux vecteurs.
+\end{definition}
+
+\begin{proposition}
+$\mathrm{sim}_{\cos}(\mathbf{u}, \mathbf{v}) \in [-1, 1]$ pour tout $\mathbf{u}, \mathbf{v} \in \mathbb{R}^p \setminus \{\mathbf{0}\}$. De plus, pour des vecteurs TF-IDF (à composantes positives), on a $\mathrm{sim}_{\cos}(\mathbf{u}, \mathbf{v}) \in [0, 1]$.
+\end{proposition}
+
+\begin{proof}
+L'inégalité de Cauchy-Schwarz affirme que $|\mathbf{u} \cdot \mathbf{v}| \leq \|\mathbf{u}\|_2 \|\mathbf{v}\|_2$, donc $|\mathrm{sim}_{\cos}| \leq 1$. Puisque les vecteurs TF-IDF ont des composantes non négatives, leur produit scalaire est positif, d'où $\mathrm{sim}_{\cos} \geq 0$.
+\end{proof}
+
+\begin{remark}[Interprétation géométrique]
+La similarité cosinus mesure \textit{l'angle} entre deux vecteurs dans l'espace vectoriel, indépendamment de leur norme. Deux documents partageant les mêmes termes avec les mêmes proportions ont une similarité de $1$, tandis que deux documents sans terme commun (orthogonaux) ont une similarité de $0$.
+\end{remark}
+
+\subsection{Extension aux N-grammes}
+
+Pour capturer les \textbf{associations de termes consécutifs}, nous enrichissons le vocabulaire avec des bigrammes.
+
+\begin{definition}[$n$-gramme]
+Un $n$-gramme d'un document $d = (t_1, t_2, \ldots, t_L)$ est une séquence de $n$ tokens consécutifs~:
+\[
+G_n(d) = \bigl\{(t_i, t_{i+1}, \ldots, t_{i+n-1}) : 1 \leq i \leq L-n+1\bigr\}
+\]
+\end{definition}
+
+Notre implémentation utilise $n \in \{1, 2\}$, soit des unigrammes et des bigrammes. Le vocabulaire étendu est~:
+\[
+\mathcal{V}_{\text{ext}} = \mathcal{V} \cup G_2(\mathcal{C})
+\]
+
+Par exemple, la phrase \textit{``analyse réseau''} génère les tokens $\{\text{analyse}, \text{réseau}, \text{analyse réseau}\}$, permettant de distinguer ce contexte de \textit{``analyse financière''}.
+
+\subsection{Pondération du titre}
+
+Le titre d'une tâche est sémantiquement plus discriminant que la description. Nous modélisons cette intuition par une \textbf{pondération multiplicative}~: le titre est concaténé deux fois avant vectorisation.
+
+\begin{definition}[Document pondéré]
+Pour une tâche $(t, s)$ composée d'un titre $t$ et d'une description $s$, le document pondéré est~:
+\[
+d^* = t \oplus t \oplus s
+\]
+où $\oplus$ désigne la concaténation. Cela revient à doubler les fréquences de tous les termes du titre dans le vecteur résultant.
+\end{definition}
+
+\begin{remark}
+Cette opération est équivalente à minimiser une fonction de coût qui pénalise davantage les erreurs de classification sur les titres que sur les descriptions, en accord avec la théorie de la classification pondérée.
+\end{remark}
+
+\subsection{Pipeline d'analyse complet}
+
+La figure~\ref{fig:pipeline} illustre l'enchaînement des transformations mathématiques.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.1cm,
+  box/.style={
+    rectangle, rounded corners=5pt,
+    draw=AIMSblue, fill=lightblue,
+    text width=3.2cm, minimum height=1cm,
+    align=center, font=\small\bfseries, text=AIMSblue
+  },
+  arrow/.style={-Stealth, thick, color=AIMSblue},
+  label/.style={font=\scriptsize\itshape, color=codegray, text width=3cm, align=center}
+]
+
+\node[box] (raw)   {Texte brut\\$(t, s)$};
+\node[box, right=of raw] (norm) {Normalisation\\$\phi(t, s)$};
+\node[box, right=of norm] (pond) {Pondération\\$d^* = t \oplus t \oplus s$};
+\node[box, right=of pond] (tfidf) {Vectorisation\\TF-IDF $\mathbf{x} \in \mathbb{R}^{|\mathcal{V}|}$};
+\node[box, right=of tfidf] (cos)  {Similarité\\$\cos(\mathbf{x}_q, \mathbf{x}_i)$};
+
+\draw[arrow] (raw)   -- (norm);
+\draw[arrow] (norm)  -- (pond);
+\draw[arrow] (pond)  -- (tfidf);
+\draw[arrow] (tfidf) -- (cos);
+
+\node[label, below=0.4cm of raw]   {Minuscules, accents, ponctuation};
+\node[label, below=0.4cm of pond]  {Titre $\times 2$};
+\node[label, below=0.4cm of tfidf] {N-grammes 1-2};
+\node[label, below=0.4cm of cos]   {Score $\in [0,1]$};
+
+\end{tikzpicture}
+\caption{Pipeline de traitement et de vectorisation d'une tâche.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Classification par seuillage}
+
+Une fois le score de similarité calculé, une règle de seuillage classe la paire de documents~:
+
+\begin{mathbox}[title=Règle de classification]
+\[
+\mathrm{niveau}(q, d_i) = \begin{cases}
+  \textbf{doublon}  & \text{si } \mathrm{sim}_{\cos}(\mathbf{x}_q, \mathbf{x}_i) \geq 0{,}90 \\
+  \textbf{forte}    & \text{si } 0{,}70 \leq \mathrm{sim}_{\cos}(\mathbf{x}_q, \mathbf{x}_i) < 0{,}90 \\
+  \textbf{modérée}  & \text{si } 0{,}50 \leq \mathrm{sim}_{\cos}(\mathbf{x}_q, \mathbf{x}_i) < 0{,}70 \\
+  \textbf{unique}   & \text{si } \mathrm{sim}_{\cos}(\mathbf{x}_q, \mathbf{x}_i) < 0{,}50
+\end{cases}
+\]
+\end{mathbox}
+
+\begin{table}[H]
+\centering
+\caption{Niveaux de similarité et actions recommandées}
+\begin{tabular}{clcl}
+\toprule
+\rowcolor{tablehead}
+\color{white}\textbf{Symbole} &
+\color{white}\textbf{Niveau} &
+\color{white}\textbf{Seuil} &
+\color{white}\textbf{Action recommandée} \\
+\midrule
+\rowcolor{tablegray}
+{\color{red}$\bullet$} & Doublon   & $\geq 90\%$ & Supprimer ou fusionner \\
+{\color{orange}$\bullet$} & Forte  & $70\%$--$89\%$ & Vérifier manuellement \\
+\rowcolor{tablegray}
+{\color{olive}$\bullet$} & Modérée   & $50\%$--$69\%$ & Examiner si complémentaire \\
+{\color{ForestGreen}$\bullet$} & Unique & $< 50\%$ & Conserver \\
+\bottomrule
+\end{tabular}
+\label{tab:niveaux}
+\end{table}
+
+\subsection{Extraction des mots-clés communs}
+
+En complément du score, nous extrayons les \textbf{termes discriminants communs} aux deux documents~:
+
+\begin{definition}[Mots-clés communs]
+Soit $K(d)$ l'ensemble des termes significatifs d'un document $d$ (après filtrage des \textit{stopwords}). Les mots-clés communs entre la requête $q$ et un document $d_i$ sont~:
+\[
+\mathcal{K}(q, d_i) = K(q) \cap K(d_i)
+\]
+Ils sont triés par score TF-IDF décroissant pour mettre en avant les plus discriminants.
+\end{definition}
+
+\subsection{Complexité algorithmique}
+
+\begin{proposition}[Complexité de l'analyse]
+Soit $n$ le nombre de documents dans le corpus et $p = |\mathcal{V}_{\text{ext}}|$ la taille du vocabulaire étendu. La complexité de l'analyse d'un document requête contre le corpus est~:
+\begin{align*}
+\text{Vectorisation TF-IDF} &: \mathcal{O}(n \cdot p) \\
+\text{Similarité cosinus}    &: \mathcal{O}(n \cdot p) \\
+\text{Total}                 &: \mathcal{O}(n \cdot p)
+\end{align*}
+Pour une analyse en masse de $m$ requêtes simultanées, la complexité devient $\mathcal{O}(m \cdot n \cdot p)$.
+\end{proposition}
+
+%% ============================================================
+\section{Architecture Logicielle}
+%% ============================================================
+
+\subsection{Principes de génie logiciel appliqués}
+
+Le projet applique rigoureusement les principes fondamentaux du \textbf{génie logiciel}~:
+
+\subsubsection{Séparation des préoccupations (\textit{Separation of Concerns})}
+
+L'architecture sépare l'application en \textbf{cinq couches} indépendantes, conformément au patron d'architecture $n$-tiers~:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layer/.style={
+    rectangle, rounded corners=4pt,
+    draw=AIMSblue, minimum width=10cm, minimum height=0.85cm,
+    align=center, font=\small\bfseries
+  },
+  arrow/.style={-Stealth, thick, color=AIMSblue, shorten >=2pt, shorten <=2pt}
+]
+
+\node[layer, fill=blue!15]    (ui)      {Couche Présentation --- React 18, Tailwind CSS};
+\node[layer, fill=blue!10, below=0.3cm of ui]  (api)  {Couche API --- FastAPI, Endpoints REST, Swagger};
+\node[layer, fill=blue!8, below=0.3cm of api]  (svc)  {Couche Métier --- Services, Moteur ML, Parser};
+\node[layer, fill=blue!6, below=0.3cm of svc]  (dal)  {Couche Données --- SQLAlchemy ORM, Modèles};
+\node[layer, fill=blue!4, below=0.3cm of dal]  (db)   {Couche Persistance --- MySQL 8, 3 tables};
+
+\draw[arrow] (ui.south)  -- (api.north) node[midway, right=0.2cm, font=\scriptsize, color=codegray] {HTTP/REST + JWT};
+\draw[arrow] (api.south) -- (svc.north) node[midway, right=0.2cm, font=\scriptsize, color=codegray] {Appels de services};
+\draw[arrow] (svc.south) -- (dal.north) node[midway, right=0.2cm, font=\scriptsize, color=codegray] {Requêtes ORM};
+\draw[arrow] (dal.south) -- (db.north)  node[midway, right=0.2cm, font=\scriptsize, color=codegray] {SQL};
+
+\end{tikzpicture}
+\caption{Architecture $n$-tiers du système Task Similarity Analyzer.}
+\label{fig:archi}
+\end{figure}
+
+\subsubsection{Principes SOLID}
+
+\begin{itemize}
+  \item \textbf{S} (\textit{Single Responsibility}) : chaque module a une responsabilité unique. Le moteur d'analyse ne connaît pas la base de données ; le service de log ne fait que journaliser.
+
+  \item \textbf{O} (\textit{Open/Closed}) : la fonction de similarité peut être étendue (cosinus, Jaccard, BM25) sans modifier le code appelant.
+
+  \item \textbf{D} (\textit{Dependency Inversion}) : les couches supérieures dépendent d'abstractions (interfaces de services), non d'implémentations concrètes.
+\end{itemize}
+
+\subsubsection{Patron MVC étendu}
+
+Le backend suit un patron \textbf{Modèle -- Vue -- Contrôleur} enrichi~:
+
+\begin{table}[H]
+\centering
+\caption{Correspondance entre les couches et le patron MVC}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\rowcolor{tablehead}
+\color{white}\textbf{Composant} & \color{white}\textbf{Rôle dans le projet} \\
+\midrule
+\rowcolor{tablegray}
+Modèles (SQLAlchemy) & Entités \texttt{User}, \texttt{Task}, \texttt{AnalysisLog} mappées sur MySQL \\
+Schémas (Pydantic)   & Validation et sérialisation des données entrantes/sortantes \\
+\rowcolor{tablegray}
+Services             & Logique métier isolée : \texttt{similarity\_engine}, \texttt{log\_service}, \texttt{report\_service} \\
+Routeurs (FastAPI)   & Contrôleurs HTTP exposant les endpoints REST \\
+\rowcolor{tablegray}
+Moteur ML            & Composant autonome encapsulant TF-IDF + Cosine Similarity \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Composants principaux}
+
+\subsubsection{Le moteur de similarité (\texttt{similarity\_engine.py})}
+
+Le cœur mathématique du système est encapsulé dans la classe \texttt{SimilarityEngine}~:
+
+\begin{lstlisting}[caption={Implémentation du moteur TF-IDF + Cosine Similarity (extrait)}, label=lst:engine]
+class SimilarityEngine:
+    """
+    Moteur de similarite textuelle : TF-IDF + Cosine Similarity.
+    Normalisation, ponderation titre x2, n-grammes (1,2).
+    """
+
+    def __init__(self, threshold: float = 0.70):
+        self.threshold = threshold
+        self.vectorizer = TfidfVectorizer(
+            analyzer="word",
+            ngram_range=(1, 2),      # unigrammes + bigrammes
+            min_df=1,
+            max_features=10000,
+            sublinear_tf=True,       # TF logarithmique
+        )
+
+    def _prepare_text(self, title: str, description: str) -> str:
+        # Le titre est repete 2x -> poids double
+        title_norm = normalize_text(title)
+        desc_norm  = normalize_text(description)
+        return f"{title_norm} {title_norm} {desc_norm}"
+
+    def compute_similarity(self, query_title, query_description,
+                           corpus):
+        query_text   = self._prepare_text(query_title, query_description)
+        corpus_texts = [self._prepare_text(t["title"],
+                         t["description"]) for t in corpus]
+
+        # Vectorisation TF-IDF sur l'ensemble [requete + corpus]
+        all_texts   = [query_text] + corpus_texts
+        tfidf_matrix = self.vectorizer.fit_transform(all_texts)
+
+        # Similarite cosinus : requete vs. chaque document du corpus
+        query_vec    = tfidf_matrix[0]
+        corpus_mat   = tfidf_matrix[1:]
+        similarities = cosine_similarity(query_vec, corpus_mat).flatten()
+
+        results = []
+        for idx, score in enumerate(similarities):
+            if float(score) >= self.threshold:
+                results.append({
+                    "task_id":          corpus[idx]["id"],
+                    "similarity_score": round(float(score), 4),
+                    "level":            get_similarity_level(float(score)),
+                    "common_keywords":  find_common_keywords(
+                        f"{query_title} {query_description}",
+                        f"{corpus[idx]['title']} {corpus[idx]['description']}"
+                    ),
+                })
+        return sorted(results, key=lambda x: x["similarity_score"],
+                      reverse=True)
+\end{lstlisting}
+
+\subsubsection{Le parser intelligent de fichiers (\texttt{file\_parser.py})}
+
+Un composant clé du projet est le \textbf{parser de fichiers CSV/Excel} capable de détecter automatiquement les colonnes pertinentes selon une stratégie hiérarchique~:
+
+\begin{algorithm}[H]
+\caption{Détection automatique des colonnes titre et description}
+\label{alg:parser}
+\begin{algorithmic}[1]
+\Require Fichier $F$, synonymes titre $S_T$, synonymes description $S_D$
+\Require Colonne titre explicite $c_t$ (optionnel), colonne description $c_d$ (optionnel)
+\Ensure Paires $(\text{titre}, \text{description})$ pour chaque ligne
+
+\State Lire $F$ et extraire l'ensemble des colonnes $\mathcal{C}_{F}$
+\State Normaliser les noms de colonnes : minuscules, sans accents
+
+\If{$c_t$ fourni explicitement}
+  \State $\text{col\_titre} \leftarrow$ recherche insensible à la casse de $c_t$ dans $\mathcal{C}_F$
+\Else
+  \State $\text{col\_titre} \leftarrow$ premier $c \in \mathcal{C}_F$ tel que $\mathrm{norm}(c) \in S_T$
+  \If{non trouvé}
+    \State $\text{col\_titre} \leftarrow$ premier $c \in \mathcal{C}_F$ tel que $\exists s \in S_T : s \subset \mathrm{norm}(c)$
+  \EndIf
+  \If{non trouvé} \textbf{Fallback} : $\text{col\_titre} \leftarrow \mathcal{C}_F[0]$ \EndIf
+\EndIf
+
+\State \textit{(Idem pour col\_description avec $S_D$)}
+
+\For{chaque ligne $\ell$ de $F$}
+  \If{$\ell[\text{col\_titre}] = \emptyset$ \textbf{et} $\ell[\text{col\_description}] \neq \emptyset$}
+    \State $\ell[\text{col\_titre}] \leftarrow \ell[\text{col\_description}][:80]$
+  \EndIf
+  \If{$\ell[\text{col\_description}] = \emptyset$}
+    \State $\ell[\text{col\_description}] \leftarrow \ell[\text{col\_titre}]$
+  \EndIf
+  \State Ajouter $(\ell[\text{col\_titre}],\; \ell[\text{col\_description}])$ au résultat
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Sécurité et authentification}
+
+L'authentification repose sur les \textbf{JSON Web Tokens} (JWT), un standard ouvert (RFC 7519). Le token est signé par HMAC-SHA256~:
+
+\begin{mathbox}[title=Structure du JWT]
+\[
+\mathrm{JWT} = \underbrace{B64(\text{header})}_{\text{algorithme}} \;.\; \underbrace{B64(\text{payload})}_{\text{claims}} \;.\; \underbrace{\mathrm{HMAC\text{-}SHA256}(B64(\text{header}) \;.\; B64(\text{payload}),\; k)}_{\text{signature}}
+\]
+\end{mathbox}
+
+Les mots de passe sont hachés par \textbf{bcrypt}, une fonction de dérivation de clé à coût ajustable (facteur de travail $2^{12}$ itérations par défaut), résistante aux attaques par force brute et aux tables arc-en-ciel.
+
+\subsection{Modèle de données}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  entity/.style={
+    rectangle, draw=AIMSblue, fill=lightblue,
+    minimum width=4.5cm, minimum height=0.6cm,
+    font=\small\bfseries, text=AIMSblue, align=center
+  },
+  attr/.style={
+    rectangle, draw=AIMSblue!40, fill=white,
+    minimum width=4.5cm, minimum height=0.5cm,
+    font=\scriptsize, text=black, align=left,
+    inner xsep=6pt
+  },
+  rel/.style={-Stealth, thick, color=AIMSblue}
+]
+
+%% User
+\node[entity] (uh) {USERS};
+\node[attr, below=0 of uh] (u1) {id : INT (PK)};
+\node[attr, below=0 of u1] (u2) {username : VARCHAR(50)};
+\node[attr, below=0 of u2] (u3) {email : VARCHAR(100)};
+\node[attr, below=0 of u3] (u4) {hashed\_password : VARCHAR(255)};
+\node[attr, below=0 of u4] (u5) {is\_active : BOOLEAN};
+\node[attr, below=0 of u5] (u6) {created\_at : DATETIME};
+
+%% Tasks
+\node[entity, right=2.5cm of uh] (th) {TASKS};
+\node[attr, below=0 of th] (t1) {id : INT (PK)};
+\node[attr, below=0 of t1] (t2) {title : VARCHAR(255)};
+\node[attr, below=0 of t2] (t3) {description : TEXT};
+\node[attr, below=0 of t3] (t4) {owner\_id : INT (FK)};
+\node[attr, below=0 of t4] (t5) {created\_at : DATETIME};
+\node[attr, below=0 of t5] (t6) {updated\_at : DATETIME};
+
+%% Logs
+\node[entity, right=2.5cm of th] (lh) {ANALYSIS\_LOGS};
+\node[attr, below=0 of lh] (l1) {id : INT (PK)};
+\node[attr, below=0 of l1] (l2) {user\_id : INT (FK)};
+\node[attr, below=0 of l2] (l3) {analysis\_type : VARCHAR(20)};
+\node[attr, below=0 of l3] (l4) {total\_submitted : INT};
+\node[attr, below=0 of l4] (l5) {duplicates\_found : INT};
+\node[attr, below=0 of l5] (l6) {column\_mapping : JSON};
+\node[attr, below=0 of l6] (l7) {status : VARCHAR(20)};
+
+\draw[rel] (t4.west) -- ++(-0.4,0) -- ++(0, 1.4) -- (u1.east);
+\draw[rel] (l2.west) -- ++(-0.4,0) -- ++(0, 2.0) -- (u1.east);
+
+\end{tikzpicture}
+\caption{Schéma relationnel --- Modèle de données du système.}
+\label{fig:schema}
+\end{figure}
+
+%% ============================================================
+\section{API REST et Documentation}
+%% ============================================================
+
+\subsection{Conception des endpoints}
+
+L'API suit les conventions \textbf{REST} (\textit{Representational State Transfer}) et est auto-documentée via \textbf{Swagger/OpenAPI}. Elle est organisée en quatre groupes de ressources~:
+
+\begin{table}[H]
+\centering
+\caption{Endpoints principaux de l'API REST}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\rowcolor{tablehead}
+\color{white}\textbf{Méthode} &
+\color{white}\textbf{Endpoint} &
+\color{white}\textbf{Description} \\
+\midrule
+\rowcolor{tablegray}
+\texttt{POST} & \texttt{/auth/register}             & Création d'un compte utilisateur \\
+\texttt{POST} & \texttt{/auth/login}                & Authentification et retour du token JWT \\
+\rowcolor{tablegray}
+\texttt{GET}  & \texttt{/tasks/}                    & Lister les tâches de l'utilisateur courant \\
+\texttt{POST} & \texttt{/tasks/}                    & Créer une nouvelle tâche \\
+\rowcolor{tablegray}
+\texttt{POST} & \texttt{/tasks/files/preview}       & Prévisualiser les colonnes d'un fichier \\
+\texttt{POST} & \texttt{/tasks/import/file}         & Importer depuis CSV/Excel (mapping auto ou manuel) \\
+\rowcolor{tablegray}
+\texttt{POST} & \texttt{/similarity/analyze}        & Analyser une tâche unique \\
+\texttt{POST} & \texttt{/similarity/analyze/bulk}   & Analyser un fichier entier \\
+\rowcolor{tablegray}
+\texttt{POST} & \texttt{/similarity/report/pdf}     & Générer un rapport PDF \\
+\texttt{POST} & \texttt{/similarity/report/excel}   & Générer un rapport Excel multi-onglets \\
+\rowcolor{tablegray}
+\texttt{GET}  & \texttt{/logs/}                     & Historique paginé des analyses \\
+\texttt{GET}  & \texttt{/logs/stats}                & Statistiques globales et tendances \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Format de réponse}
+
+Un exemple de réponse de l'endpoint d'analyse illustre la richesse sémantique des résultats~:
+
+\begin{infobox}
+\small
+\textbf{Réponse \texttt{POST /similarity/analyze}} (format JSON simplifié)~:
+
+\medskip
+\texttt{
+\{\\
+\quad "submitted\_title": "Audit sécurité réseau",\\
+\quad "total\_analyzed": 42,\\
+\quad "duplicates\_found": 1,\\
+\quad "matches": [\\
+\quad\quad \{\\
+\quad\quad\quad "title": "Revue infrastructure réseau",\\
+\quad\quad\quad "similarity\_score": 0.9134,\\
+\quad\quad\quad "level": "doublon",\\
+\quad\quad\quad "common\_keywords": ["réseau","audit","sécurité","infrastructure"]\\
+\quad\quad \}\\
+\quad ]\\
+\}
+}
+\end{infobox}
+
+%% ============================================================
+\section{Interface Utilisateur}
+%% ============================================================
+
+\subsection{Technologies front-end}
+
+L'interface est développée avec les technologies modernes du web~:
+
+\begin{itemize}
+  \item \textbf{React 18} avec \textit{hooks} (\texttt{useState}, \texttt{useEffect}, \texttt{useCallback}) et \textit{Context API} pour la gestion d'état ;
+  \item \textbf{Tailwind CSS v3} avec un design system personnalisé (palette \textit{obsidian}, typographie Syne/DM~Sans/JetBrains~Mono) ;
+  \item \textbf{React Router v6} pour le routage SPA (\textit{Single Page Application}) avec routes protégées ;
+  \item \textbf{Recharts} pour la visualisation des statistiques (AreaChart, BarChart, PieChart) ;
+  \item \textbf{Axios} avec intercepteurs JWT pour tous les appels API.
+\end{itemize}
+
+\subsection{Pages et fonctionnalités}
+
+\begin{table}[H]
+\centering
+\caption{Pages de l'interface React}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\rowcolor{tablehead}
+\color{white}\textbf{Page} & \color{white}\textbf{Fonctionnalités} \\
+\midrule
+\rowcolor{tablegray}
+Authentification & Formulaire login/inscription, gestion du token JWT \\
+Dashboard        & Statistiques globales, graphiques de tendance, accès rapide \\
+\rowcolor{tablegray}
+Analyser         & Saisie titre/description, résultats en temps réel, sauvegarde corpus \\
+Import           & Drag \& drop, preview colonnes automatique, mapping manuel, résultats expandables \\
+\rowcolor{tablegray}
+Tâches           & CRUD complet avec édition inline et recherche \\
+Rapports         & Génération et téléchargement PDF / Excel en un clic \\
+\rowcolor{tablegray}
+Historique       & Journal paginé, filtres, drill-down, graphique tendance 30 jours \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%% ============================================================
+\section{Résultats et Évaluation}
+%% ============================================================
+
+\subsection{Exemple d'analyse numérique}
+
+Considérons deux tâches~:
+
+\begin{itemize}
+  \item $d_1$ : \textit{``Audit infrastructure réseau / Analyse complète de l'infrastructure réseau de l'entreprise incluant les équipements actifs, la topologie et les VLAN''}
+  \item $d_2$ : \textit{``Revue sécurité réseau / Analyse de sécurité de l'infrastructure réseau incluant les firewalls, les accès VPN et la configuration des routeurs''}
+\end{itemize}
+
+Après normalisation et vectorisation TF-IDF (vocabulaire partiel)~:
+
+\[
+\mathbf{x}_1 = (\underbrace{0.41}_{\text{réseau}},\; \underbrace{0.38}_{\text{infrastructure}},\; \underbrace{0.31}_{\text{analyse}},\; \underbrace{0.29}_{\text{vlan}},\; \underbrace{0.0}_{\text{firewall}},\; \ldots)
+\]
+\[
+\mathbf{x}_2 = (\underbrace{0.44}_{\text{réseau}},\; \underbrace{0.35}_{\text{infrastructure}},\; \underbrace{0.27}_{\text{analyse}},\; \underbrace{0.0}_{\text{vlan}},\; \underbrace{0.39}_{\text{firewall}},\; \ldots)
+\]
+
+La similarité cosinus~:
+\[
+\mathrm{sim}_{\cos}(\mathbf{x}_1, \mathbf{x}_2)
+= \frac{(0.41)(0.44) + (0.38)(0.35) + (0.31)(0.27) + \cdots}{\|\mathbf{x}_1\|_2 \cdot \|\mathbf{x}_2\|_2}
+\approx \mathbf{0.78}
+\]
+
+Ce score de $78\%$ est classé \textbf{similarité forte}, ce qui est cohérent~: les deux tâches portent sur l'analyse du réseau mais avec des périmètres différents (topologie vs. sécurité).
+
+\subsection{Propriétés de l'estimateur TF-IDF}
+
+\begin{proposition}[Robustesse aux documents longs]
+La normalisation $L_2$ des vecteurs TF-IDF garantit que la similarité cosinus est \textbf{indépendante de la longueur} des documents. Deux documents identiques, l'un deux fois plus long que l'autre par répétition, ont une similarité cosinus de $1$.
+\end{proposition}
+
+\begin{proof}
+Soit $d' = d \oplus d$ la concaténation de $d$ avec lui-même. Alors $f(w, d') = 2f(w, d)$ pour tout $w$, donc $\mathbf{x}_{d'} = \alpha \mathbf{x}_d$ pour un scalaire $\alpha > 0$. Par homogénéité~:
+\[
+\mathrm{sim}_{\cos}(\mathbf{x}_d, \mathbf{x}_{d'})
+= \frac{\mathbf{x}_d \cdot \alpha\mathbf{x}_d}{\|\mathbf{x}_d\| \cdot \|\alpha\mathbf{x}_d\|}
+= \frac{\alpha \|\mathbf{x}_d\|^2}{\alpha \|\mathbf{x}_d\|^2} = 1. \qquad \square
+\]
+\end{proof}
+
+\subsection{Limites et perspectives}
+
+\begin{table}[H]
+\centering
+\caption{Limites du modèle TF-IDF et améliorations possibles}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\rowcolor{tablehead}
+\color{white}\textbf{Limite} & \color{white}\textbf{Amélioration envisagée} \\
+\midrule
+\rowcolor{tablegray}
+Absence de sémantique profonde & Embeddings neuronaux (BERT, CamemBERT) \\
+Sensibilité au vocabulaire      & Modèles multilingues pré-entraînés \\
+\rowcolor{tablegray}
+Scalabilité sur grands corpus  & Index approximatifs (FAISS, Annoy) \\
+Absence d'apprentissage actif  & Retour utilisateur pour affiner les seuils \\
+\rowcolor{tablegray}
+Monolingue par corpus           & Alignement cross-lingue pour FR/EN \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%% ============================================================
+\section{Génie Logiciel --- Méthodologie et Qualité}
+%% ============================================================
+
+\subsection{Processus de développement}
+
+Le projet a été conduit selon une approche \textbf{agile itérative} avec~:
+
+\begin{itemize}
+  \item \textbf{Spécification} des exigences fonctionnelles (analyse unitaire, bulk, rapports) et non-fonctionnelles (sécurité, isolation des données, robustesse du parsing) ;
+  \item \textbf{Conception} de l'architecture avant l'implémentation --- modèle de données, diagrammes de composants, contrat d'API ;
+  \item \textbf{Implémentation} en deux versions majeures : v1.0 (noyau ML + API) puis v2.0 (parser robuste + logs + rapports + interface React) ;
+  \item \textbf{Validation} par tests unitaires (\texttt{pytest}) et tests d'intégration sur les endpoints REST.
+\end{itemize}
+
+\subsection{Qualité du code}
+
+La qualité est garantie par~:
+
+\begin{itemize}
+  \item \textbf{Documentation} : docstrings exhaustives, README technique, Swagger auto-généré ;
+  \item \textbf{Gestion des erreurs} : codes HTTP sémantiques (400, 401, 404, 422, 500), messages d'erreur explicites ;
+  \item \textbf{Validation des données} : schémas Pydantic v2 à la frontière API (typage fort, coercition, validation des champs requis) ;
+  \item \textbf{Sécurité} : hachage bcrypt, JWT signé, isolation des données par utilisateur à chaque requête base de données.
+\end{itemize}
+
+\subsection{Containerisation et déploiement}
+
+Le projet est livré avec un fichier \texttt{docker-compose.yml} orchestrant~:
+\begin{itemize}
+  \item Le service \textbf{MySQL 8} avec initialisation automatique du schéma ;
+  \item Le service \textbf{FastAPI} avec rechargement automatique en développement.
+\end{itemize}
+
+Cette approche garantit la \textbf{reproductibilité} du déploiement sur tout environnement.
+
+%% ============================================================
+\section{Conclusion}
+%% ============================================================
+
+Ce projet démontre la synergie entre plusieurs disciplines~:
+
+\begin{itemize}
+  \item \textbf{Mathématiques} : algèbre linéaire (espaces vectoriels, produit scalaire, norme euclidienne), traitement statistique des fréquences, inégalité de Cauchy-Schwarz, complexité algorithmique ;
+  \item \textbf{Apprentissage automatique} : représentation vectorielle TF-IDF, similarité cosinus, seuillage adaptatif, extraction de caractéristiques textuelles ;
+  \item \textbf{Traitement du langage naturel} : tokenisation, filtrage de stopwords, $n$-grammes, normalisation orthographique multilingue ;
+  \item \textbf{Génie logiciel} : architecture $n$-tiers, principes SOLID, API REST, sécurité JWT/bcrypt, tests automatisés, containerisation Docker ;
+  \item \textbf{Ingénierie des systèmes} : robustesse du parsing (multi-encodage, fallback), gestion des erreurs, logging, génération de rapports.
+\end{itemize}
+
+\begin{tcolorbox}[
+  enhanced, arc=6pt,
+  colback=lightblue, colframe=AIMSblue,
+  boxrule=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt
+]
+\textbf{Portée scientifique.} Ce travail s'inscrit dans le domaine de la \textit{recherche d'information} (\textit{Information Retrieval}), dont les fondements mathématiques rejoignent directement les thématiques de recherche d'AIMS~: optimisation, analyse matricielle, apprentissage statistique et algorithmique. Il constitue une application concrète de l'algèbre linéaire en dimension infinie à des problèmes réels, ouvrant la voie à des extensions plus sophistiquées (modèles de langage profonds, optimisation convexe des seuils, apprentissage par renforcement du retour utilisateur).
+\end{tcolorbox}
+
+\vspace{0.5cm}
+Ce projet, entièrement conçu, architecturé et implémenté de manière autonome, témoigne d'une maîtrise transversale allant de la modélisation mathématique à la livraison d'un logiciel professionnel complet. Il illustre la capacité à transformer une problématique métier en un système rigoureux, scalable et maintenable.
+
+%% ── Références ───────────────────────────────────────────────
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{salton1988}
+Salton, G. \& Buckley, C. (1988).
+\textit{Term-weighting approaches in automatic text retrieval}.
+Information Processing \& Management, 24(5), 513--523.
+
+\bibitem{manning2008}
+Manning, C. D., Raghavan, P. \& Schütze, H. (2008).
+\textit{Introduction to Information Retrieval}.
+Cambridge University Press.
+
+\bibitem{jones1972}
+Sparck Jones, K. (1972).
+\textit{A statistical interpretation of term specificity and its application in retrieval}.
+Journal of Documentation, 28(1), 11--21.
+
+\bibitem{sklearn}
+Pedregosa, F. et al. (2011).
+\textit{Scikit-learn: Machine Learning in Python}.
+Journal of Machine Learning Research, 12, 2825--2830.
+
+\bibitem{robertson2004}
+Robertson, S. (2004).
+\textit{Understanding inverse document frequency: on theoretical arguments for IDF}.
+Journal of Documentation, 60(5), 503--520.
+
+\bibitem{fastapi}
+Ramírez, S. (2019).
+\textit{FastAPI: Fast (high-performance), web framework for building APIs with Python}.
+\url{https://fastapi.tiangolo.com}
+
+\bibitem{precht2023}
+Devlin, J., Chang, M. W., Lee, K. \& Toutanova, K. (2019).
+\textit{BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}.
+NAACL-HLT 2019.
+
+\end{thebibliography}
+
+\end{document}
